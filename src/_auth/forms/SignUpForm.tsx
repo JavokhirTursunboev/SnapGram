@@ -9,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { SignUpSchema } from "@/lib/formSchema";
 import Loader from "@/components/shared/Loader";
 import { createUserAccount } from "@/lib/appwrite/api";
+import { useToast } from "@/components/ui/use-toast";
 
 const SignUpForm = () => {
+  const { toast } = useToast();
   const isLoading = false;
   const form = useForm<z.infer<typeof SignUpSchema>>({
     resolver: zodResolver(SignUpSchema),
@@ -24,7 +26,13 @@ const SignUpForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignUpSchema>) {
     const newUser = await createUserAccount(values);
-    console.log(newUser);
+
+    // !==== Toast ==== //
+    if (!newUser) {
+      return toast({
+        title: "Sign up failed. Please try again. ",
+      });
+    }
   }
   return (
     <Form {...form}>
